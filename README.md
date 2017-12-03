@@ -1,4 +1,5 @@
 # grafana-ocp
+This project introduce a grafana deployment for openshift metrics.
 
 Note: make sure to have openshift prometheus deployed.
 
