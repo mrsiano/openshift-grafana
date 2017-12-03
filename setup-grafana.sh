@@ -5,13 +5,7 @@ DASH_FILE="./openshift-cluster-monitoring.json"
 
 oc create namespace grafana
 oc new-app -f grafana-ocp.yaml
-
-pod_state=""
-while [ "$pod_state" != "Running" ]
-do
-        pod_state=`oc get pod |grep grafana |awk '{print $3}'`
-        sleep 1
-done
+oc rollout status deployment/grafana-ocp
 
 TOKEN=`oc sa get-token prometheus -n kube-system`
 ROUTE=`oc get route |grep grafana |awk '{print $2}'`
