@@ -1,27 +1,65 @@
-#!/bin/sh
+#!/bin/bash
 
-DS_NAME=$1
-DASH_FILE="./openshift-cluster-monitoring.json"
+datasource_name=$1
+prometheus_namespace=$2
+oauth=$3
+yaml="grafana-ocp.yaml"
+protocol="http://"
 
-oc create namespace grafana
-oc new-app -f grafana-ocp.yaml
+
+usage() {
+echo "
+USAGE
+ setup-grafana.sh pro-ocp openshift-metrics true
+
+ args:
+   datasource_name: grafana datasource name
+   prometheus_namespace: existing prometheus name e.g openshift-metrics
+   oauth: if set to true it will deploy grafana with oauth authorization
+
+ note:
+   the project must have view permissions for kube-system
+"
+exit 1
+}
+
+[[ -n ${datasource_name} ]] || usage
+
+if [[ ${oauth} = true ]]; then
+    yaml="grafana-ocp-oauth.yaml"; protocol="https://"; echo "deploying with oauth";
+fi
+
+
+
+oc new-project grafana
+oc process -f "${yaml}" |oc create -f -
 oc rollout status deployment/grafana-ocp
+oc adm policy add-role-to-user view -z grafana-ocp -n kube-system
 
-TOKEN=`oc sa get-token prometheus -n kube-system`
-ROUTE=`oc get route |grep grafana |awk '{print $2}'`
-PRO_SERVER=`oc get route --all-namespaces |grep prometheus |awk '{print $3}'`
-JSON="{\"name\":\""$DS_NAME"\",\"type\":\"prometheus\",\"typeLogoUrl\":\"\",\"access\":\"proxy\",\"url\":\"https://"$PRO_SERVER"\",\"basicAuth\":false,\"withCredentials\":false,\"jsonData\":{\"tlsSkipVerify\":true,\"token\":\"$TOKEN\"}}"
+payload="$( mktemp )"
+cat <<EOF >"${payload}"
+{
+"name": "${datasource_name}",
+"type": "prometheus",
+"typeLogoUrl": "",
+"access": "proxy",
+"url": "https://$( oc get route prometheus -n "${prometheus_namespace}" -o jsonpath='{.spec.host}' )",
+"basicAuth": false,
+"withCredentials": false,
+"jsonData": {
+    "tlsSkipVerify":true,
+    "token":"$( oc sa get-token grafana-ocp )"
+}
+}
+EOF
 
-# Add DS.
-curl -H "Content-Type: application/json" -u admin:admin $ROUTE/api/datasources -X POST -d $JSON
+grafana_host="${protocol}$( oc get route grafana-ocp -o jsonpath='{.spec.host}' )"
+curl -H "Content-Type: application/json" -u admin:admin "${grafana_host}/api/datasources" -X POST -d "@${payload}"
 
-# Replace values for DS.
-sed -i 's/${DS_PR}/'$DS_NAME'/' $DASH_FILE
+dashboard_file="./openshift-cluster-monitoring.json"
+sed -i.bak "s/\${DS_PR}/${datasource_name}/" "${dashboard_file}"
+curl -H "Content-Type: application/json" -u admin:admin "${grafana_host}/api/dashboards/db" -X POST -d "@${dashboard_file}"
+mv "${dashboard_file}.bak" "${dashboard_file}"
 
-# Create new dashboard.
-curl -H "Content-Type: application/json" -u admin:admin $ROUTE/api/dashboards/db -X POST -d @$DASH_FILE
-
-# Tear down.
-sed -i 's/'$DS_NAME'/${DS_PR}/' $DASH_FILE
 
 exit 0
