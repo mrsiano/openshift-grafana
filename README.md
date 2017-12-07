@@ -7,7 +7,7 @@ Note: make sure to have openshift prometheus deployed.
 ## Deploy on openshift cluster
 ```
 ./redeploy-prometheus.sh deploy
-./setup-grafana.sh prometheus-ocp
+./setup-grafana.sh prometheus-ocp prometheus true
 ```
 
 ## Deploy on openshift cluster with grafana manually
