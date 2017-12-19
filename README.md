@@ -4,11 +4,27 @@ This project introduce a grafana deployment for openshift metrics.
 Note: make sure to have openshift prometheus deployed.
 
 
-## Deploy on openshift cluster
-```
-./redeploy-prometheus.sh deploy
-./setup-grafana.sh prometheus-ocp prometheus true
-```
+## To deploy grafana
+Note: make sure to have openshift prometheus deployed.
+(https://github.com/openshift/origin/tree/master/examples/prometheus)
+
+``` ./setup-grafana.sh prometheus-ocp prometheus false ``` - for byo cluster (prometheus selfdeployment).
+
+``` ./setup-grafana.sh prometheus-ocp openshift-metrics true ``` - for byo cluster that uses openshift_metrics plus oauth.
+
+## How to use oauth proxy:
+Note: when using oauth make sure your user has permission to browse grafana.
+- add a openshift user htpasswd ```htpasswd -c /etc/origin/master/htpasswd gfadmin```
+- use the HTPasswdPasswordIdentityProvider as described here - https://docs.openshift.com/enterprise/3.0/admin_guide/configuring_authentication.html 
+- make sure point the provider file to /etc/origin/master/htpasswd.
+  or using this example cmd:
+  ```
+  sed -ie 's|AllowAllPasswordIdentityProvider|HTPasswdPasswordIdentityProvider\n      file: /etc/origin/master/htpasswd|' /etc/origin/master/master-config.yaml
+  ```
+- add view role to user ```oc adm policy add-cluster-role-to-user cluster-reader gfadmin```
+- restart master api ```systemctl restart atomic-openshift-master-api.service```
+- get the grafana url by ```oc get route```
+- discover your openshift dashboard.
 
 ## Deploy on openshift cluster with grafana manually
 
