@@ -1,8 +1,11 @@
-# grafana-ocp
-This project introduce a grafana deployment for openshift metrics.
+# Openshift Grafana Dashboards
 
-Note: make sure to have openshift prometheus deployed.
+Research repository, see the origin page for official example
+https://github.com/openshift/origin/tree/master/examples/grafana
 
+## Available Dashboards
+- openshift cluster metrics
+- node exporter metrics
 
 ## To deploy grafana
 Note: make sure to have openshift prometheus deployed.
@@ -26,7 +29,7 @@ Note: when using oauth make sure your user has permission to browse grafana.
 - get the grafana url by ```oc get route```
 - discover your openshift dashboard.
 
-## Deploy on openshift cluster with grafana manually
+## Deploy grafana manually
 
 (https://github.com/openshift/origin/tree/master/examples/prometheus)
 
