@@ -12,7 +12,7 @@ metadata:
 parameters:
 - description: The location of the proxy image
   name: IMAGE_GF
-  value: mrsiano/grafana-ocp:latest
+  value: mrsiano/openshift-grafana:latest
 - description: External URL for the grafana route
   name: ROUTE_URL
   value: ""

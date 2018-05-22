@@ -1,7 +1,8 @@
 # Openshift Grafana Dashboards
 
 Research repository, see the origin page for official example
-https://github.com/openshift/origin/tree/master/examples/grafana
+- https://github.com/openshift/openshift-ansible/tree/master/roles/openshift_grafana
+- https://github.com/openshift/origin/tree/master/examples/grafana
 
 ## Available Dashboards
 - openshift cluster metrics
@@ -11,9 +12,10 @@ https://github.com/openshift/origin/tree/master/examples/grafana
 Note: make sure to have openshift prometheus deployed.
 (https://github.com/openshift/origin/tree/master/examples/prometheus)
 
-``` ./setup-grafana.sh prometheus-ocp prometheus false ``` - for byo cluster (prometheus selfdeployment).
+``` ./setup-grafana.sh -n prometheus -a -e ``` 
 
-``` ./setup-grafana.sh prometheus-ocp openshift-metrics true ``` - for byo cluster that uses openshift_metrics plus oauth.
+when you being asked to type username \ password, type 'grafana'
+and login with the same cerdentials 
 
 ## How to use oauth proxy:
 Note: when using oauth make sure your user has permission to browse grafana.

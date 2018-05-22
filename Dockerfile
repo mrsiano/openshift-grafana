@@ -1,9 +1,8 @@
-FROM centos:7
+FROM centos:centos7
 
 MAINTAINER Eldad Marciano "mrsiano@gmail.com"
 
 ENV GOPATH /root/go
-
 
 RUN curl --silent --location https://rpm.nodesource.com/setup_6.x | bash -
 
@@ -23,7 +22,7 @@ RUN mkdir -p $GOPATH/src/github.com/grafana && \
     cd $GOPATH/src/github.com/grafana && pwd && \
     git clone https://github.com/mrsiano/grafana.git && \
     cd grafana && pwd && git branch -a && \
-    git checkout OAuth;
+    git checkout generic_oauth;
 
 RUN cd $GOPATH/src/github.com/grafana/grafana && \
     go run build.go setup && \
