@@ -46,8 +46,8 @@ Note: when using oauth make sure your user has permission to browse grafana.
 9. save & test and make sure all green.
 
 ### Pull standalone docker grafana instance
-1. ```docker pull docker.io/mrsiano/grafana-ocp```
-2. ```docker run -d -ti -p 3000:3000 mrsiano/grafana-ocp "./bin/grafana-server"```
+1. ```docker pull docker.io/mrsiano/openshift-grafana```
+2. ```docker run -d -ti -p 3000:3000 mrsiano/openshift-grafana "./bin/grafana-server"```
 
 ### Build and run the docker image
 1. ```docker build -t grafana-ocp .```
