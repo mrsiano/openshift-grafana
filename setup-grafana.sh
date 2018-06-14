@@ -92,10 +92,10 @@ cat <<EOF >"${payload}"
 "basicAuth": false,
 "withCredentials": false,
 "jsonData": {
-    "tlsSkipVerify":true
+    "tlsSkipVerify":true,
+    "httpHeaderName1":"Authorization"
 },
 "secureJsonData": {
-    "httpHeaderName1":"Authorization",
     "httpHeaderValue1":"Bearer $( oc sa get-token "${sa_reader}" -n "${prometheus_namespace}" )"
 }
 }
