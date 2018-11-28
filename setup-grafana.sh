@@ -44,8 +44,8 @@ exit 1
 }
 
 get::namespace(){
-if [ -z "$(oc projects |grep openshift-metrics)" ]; then
-    prometheus_namespace="kube-system"
+if [ -z "$(oc projects |grep openshift-monitoring)" ]; then
+    prometheus_namespace="openshift-monitoring"
 else
     prometheus_namespace="openshift-metrics"
 fi
@@ -69,7 +69,7 @@ mv "${dashboard_file}.bak" "${dashboard_file}"
 }
 
 [[ -n ${datasource_name} ]] || usage
-[[ -n ${sa_reader} ]] || sa_reader="prometheus"
+[[ -n ${sa_reader} ]] || sa_reader="prometheus-reader"
 [[ -n ${prometheus_namespace} ]] || get::namespace
 [[ -n ${graph_granularity} ]]  || graph_granularity="2m"
 # TODO: replace with link to origin/examples
@@ -88,7 +88,7 @@ cat <<EOF >"${payload}"
 "type": "prometheus",
 "typeLogoUrl": "",
 "access": "proxy",
-"url": "https://$( oc get route prometheus -n "${prometheus_namespace}" -o jsonpath='{.spec.host}' )",
+"url": "https://$( oc get route prometheus-k8s -n "${prometheus_namespace}" -o jsonpath='{.spec.host}' )",
 "basicAuth": false,
 "withCredentials": false,
 "jsonData": {
